@@ -15,7 +15,7 @@ class TreeChart {
             defaultTextFill: '#2C3E50',
             nodeTextFill: 'white',
             defaultFont: 'Helvetica',
-            backgroundColor: '#fafafa',
+            backgroundColor: '#e4e4e4',
             data: null,
             depth: 180,
             duration: 600,
@@ -423,16 +423,17 @@ class TreeChart {
                 // Declare properties with deffault values
                 let imageWidth = 100;
                 let imageHeight = 100;
-                let imageBorderColor = 'steelblue';
-                let imageBorderWidth = 0;
+                let imageBorderColor = 'white';
+                let imageBorderWidth = 5;
                 let imageRx = 0;
                 let imageCenterTopDistance = 0;
                 let imageCenterLeftDistance = 0;
-                let borderColor = 'steelblue';
-                let backgroundColor = 'steelblue';
+                let borderColor = 'white';
+                let backgroundColor = 'white';
                 let width = d.data.width;
                 let height = d.data.height;
                 let dropShadowId = `none`;
+                let imageOpacity = d.data.opacity || 1;
 
                 // Override default values based on data
                 if (d.data.nodeImage && d.data.nodeImage.shadow) {
@@ -468,7 +469,10 @@ class TreeChart {
                 }
                 if (d.data.nodeImage &&
                     d.data.nodeImage.cornerShape.toLowerCase() == "rounded") {
-                    imageRx = Math.min(imageWidth, imageHeight) / 6;
+                    imageRx = Math.min(imageWidth, imageHeight) ;
+                }
+                if (d.data.nodeImage && d.data.nodeImage.opacity) {
+                    imageOpacity = d.data.nodeImage.opacity;
                 }
 
                 // Extend node object with calculated properties
@@ -484,7 +488,8 @@ class TreeChart {
                     height,
                     imageCenterTopDistance,
                     imageCenterLeftDistance,
-                    dropShadowId
+                    dropShadowId,
+                    imageOpacity
                 });
             });
 
@@ -529,6 +534,7 @@ class TreeChart {
             .attr('width', ({
                 imageHeight
             }) => imageHeight)
+            .attr('opacity', ({imageOpacity}) => imageOpacity)
             .attr('xlink:href', ({
                 data
             }) => data.nodeImage && data.nodeImage.url)
@@ -792,10 +798,11 @@ class TreeChart {
                 imageHeight,
                 height
             }) => {
-                let x = -imageWidth / 2 - width / 2;
-                let y = -imageHeight / 2 - height / 2;
+                let x = -imageWidth / 2 - width / 2 + 20;
+                let y = -imageHeight;
                 return `translate(${x},${y})`
             })
+
 
         // Style node image rectangles
         nodeUpdate.select('.node-image-rect')
@@ -854,6 +861,7 @@ class TreeChart {
             .style("fill", ({
                 backgroundColor
             }) => backgroundColor)
+            
 
         // Move node button group to the desired position
         nodeUpdate.select('.node-button-g')
